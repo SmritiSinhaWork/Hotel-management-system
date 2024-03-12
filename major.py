@@ -41,8 +41,15 @@ if __name__ == "__main__":
             if sorted(roomslist) != sorted(difflist):
                 print("Please choose rooms from the chart only")
             else:
+                email=input('Enter your email id: ')
+                no_of_person=int(input('Enter the no of people: '))
+                per=[]
+                for i in range (no_of_person):
+                    persons=input('Enter the names: ')
+                    per.append(persons)
+                no_of_days=int(input('Enter the number of days you will be staying: '))
                 for item in roomslist:
-                    collection.insert_one({'name' : name , 'room_no' : item})
+                    collection.insert_one({'name' : name , 'room_no' : item , 'email' : email , 'persons' : per, 'no_of_days' : no_of_days})
                 print("Rooms have been aloted to",name)
         case 2:
             print("****Guest list****\nName\t\t\tRoom no.")
@@ -52,15 +59,25 @@ if __name__ == "__main__":
         case 3:
             print("****Check out****")
             name=input("Enter your name: ")
-            no_room=int(input('How many rooms do you want to check out:'))
-            for i in range(no_room):
-                room=int(input('Enter the room no.:'))
-                collection.delete_one({'name' : name, 'room_no' : room})
+            alotedroom=collection.find({'name': name},{'room_no' : 1, '_id':0})
+            for item in alotedroom:
+                print(item)
+            choice2=input('Do you want to check out from all the rooms(y/n)? ')
+            if choice2 == 'y':
+                collection.delete_many({'name' : name})
+            elif choice2 == 'n':
+                no_room=int(input('How many room you want to leave? '))                
+                for i in range(no_room):
+                    room=int(input('Enter the room no.: '))
+                    collection.delete_one({'name' : name, 'room_no' : room})
             print("Thank you!! Visit again")
         case 4:
             print("****Guest details****")
             name=input("Enter your name: ")
-            collection.find({'name' : name})
+            email=input("Enter your email: ")
+            details = collection.distinct({'name' : name, 'email' : email})
+            for items in details:
+                print(items)
         case 5:
             print("****Exit****")
         case _:
