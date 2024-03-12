@@ -45,15 +45,17 @@ if __name__ == "__main__":
                     collection.insert_one({'name' : name , 'room_no' : item})
                 print("Rooms have been aloted to",name)
         case 2:
-            print("****Guest list****")
+            print("****Guest list****\nName\t\t\tRoom no.")
             room=collection.find({}, { 'name': 1, 'room_no' : 1, '_id' : 0 })
             for item in room:
-                print(item)
+                print(item['name'],item['room_no'],sep='\t\t\t')
         case 3:
             print("****Check out****")
             name=input("Enter your name: ")
-            room=int(input('Enter the room no.:'))
-            collection.delete_one({'name' : name, 'room_no' : room})
+            no_room=int(input('How many rooms do you want to check out:'))
+            for i in range(no_room):
+                room=int(input('Enter the room no.:'))
+                collection.delete_one({'name' : name, 'room_no' : room})
             print("Thank you!! Visit again")
         case 4:
             print("****Guest details****")
