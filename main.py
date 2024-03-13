@@ -13,44 +13,56 @@ if __name__ == '__main__':
         match choice:
             case 1:
                 print('****Check In****')
-                name=input('Enter your name: ')
-                x = datetime.datetime.now()
-                y=int(x.strftime('%H'))
-                if (y>=7 and y<12):
-                    print('Good morning,', name, '!!')
-                elif (y>=12 and y<18):
-                    print('Good afternoon,', name, '!!')
-                elif (y>=18 and y<22):
-                    print('Good evening,', name, '!!')
-                else:
-                    print('Sorry', name, 'We are closed!!!\nWe are open from 7:00 AM to 9:59 PM everyday.')
-                    break
-                rooms=collection.find()
-                arrayroom=[]
-                for item in rooms:
-                    if 'room_no' in item:
-                        arrayroom.append(item['room_no'])
-                difference = set(total_rooms) - set(arrayroom)
-                print('Available rooms:', difference)
+
+                def greet(name):
+                    global date
+                    date = datetime.datetime.now()
+                    hour = date.hour
+                    if 7<= hour <12:
+                        return f'Good morning, {name}!!'
+                    elif 12<= hour <18:
+                        return f'Good afternoon, {name}!!'
+                    elif 18<= hour <22:
+                        return f'Good evening, {name}!!'
+                    else:
+                        return f'Sorry, {name}, We are closed!!!We are open from 7:00 AM to 9:59 PM everyday.'
+                    
+                name = input('Enter your name: ')
+                print(greet(name))
+                
+                def availableroom():
+                    global difference
+                    rooms=collection.find()
+                    arrayroom=[]
+                    for item in rooms:
+                        if 'room_no' in item:
+                            arrayroom.append(item['room_no'])
+                    difference = set(total_rooms) - set(arrayroom)
+                    return f'Available rooms:, {difference}'
+                print(availableroom)
+                
+                def checkin(no_rooms):
+                    roomslist=[]
+                    for i in range(1,no_rooms+1):
+                        room=int(input('Choose any room from the above chart:'))
+                        roomslist.append(room)
+                    difflist=list(set(difference) & set(roomslist))
+                    if sorted(roomslist) != sorted(difflist):
+                        return 'Please choose rooms from the chart only'
+                    else:
+                        email=input('Enter your email id: ')
+                        no_of_person=int(input('Enter the no of people: '))
+                        per=[]
+                        for i in range (no_of_person):
+                            persons=input('Enter the names: ')
+                            per.append(persons)
+                        no_of_days=int(input('Enter the number of days you will be staying: '))
+                        for item in roomslist:
+                            collection.insert_one({'name' : name , 'room_no' : item , 'email' : email , 'persons' : per, 'no_of_days' : no_of_days, 'no_of_person' : no_of_person, 'checkin_time' : date})
+                        return f'Rooms have been alloted to {name}'
                 no_rooms=int(input('How many rooms do you want:'))
-                roomslist=[]
-                for i in range(1,no_rooms+1):
-                    room=int(input('Choose any room from the above chart:'))
-                    roomslist.append(room)
-                difflist=list(set(difference) & set(roomslist))
-                if sorted(roomslist) != sorted(difflist):
-                    print('Please choose rooms from the chart only')
-                else:
-                    email=input('Enter your email id: ')
-                    no_of_person=int(input('Enter the no of people: '))
-                    per=[]
-                    for i in range (no_of_person):
-                        persons=input('Enter the names: ')
-                        per.append(persons)
-                    no_of_days=int(input('Enter the number of days you will be staying: '))
-                    for item in roomslist:
-                        collection.insert_one({'name' : name , 'room_no' : item , 'email' : email , 'persons' : per, 'no_of_days' : no_of_days, 'no_of_person' : no_of_person, 'checkin_time' : x})
-                    print("Rooms have been alloted to",name)
+                print(checkin(no_rooms))
+
             case 2:
                 print('****Guest list****\nName\t\t\tRoom no.')
                 room=collection.find({}, { 'name': 1, 'room_no' : 1, '_id' : 0 })
