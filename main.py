@@ -1,29 +1,29 @@
 import pymongo
 import datetime
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['Smriti']
     collection = db['hotel']
     
     while True:
-        print("+----- Hotel Management system ----+\n1. Check in\n2. Show guest list \n3. Check out \n4. Get info of guest \n5. Exit\n+----------------------------------+")
-        choice=int(input("Enter the number of the program you desire to run:"))
+        print('+----- Hotel Management system ----+\n1. Check in\n2. Show guest list \n3. Check out \n4. Get info of guest \n5. Exit\n+----------------------------------+')
+        choice=int(input('Enter the number of the program you desire to run:'))
         total_rooms = list(range(1, 21))
         match choice:
             case 1:
-                print("****Check In****")
-                name=input("Enter your name: ")
+                print('****Check In****')
+                name=input('Enter your name: ')
                 x = datetime.datetime.now()
-                y=int(x.strftime("%H"))
+                y=int(x.strftime('%H'))
                 if (y>=7 and y<12):
-                    print("Good morning,", name, "!!")
+                    print('Good morning,', name, '!!')
                 elif (y>=12 and y<18):
-                    print("Good afternoon,", name, "!!")
+                    print('Good afternoon,', name, '!!')
                 elif (y>=18 and y<22):
-                    print("Good evening,", name, "!!")
+                    print('Good evening,', name, '!!')
                 else:
-                    print("Sorry", name, "We are closed!!!\nWe're open from 7:00 AM to 9:59 PM everyday.")
+                    print('Sorry', name, 'We are closed!!!\nWe are open from 7:00 AM to 9:59 PM everyday.')
                     break
                 rooms=collection.find()
                 arrayroom=[]
@@ -37,10 +37,9 @@ if __name__ == "__main__":
                 for i in range(1,no_rooms+1):
                     room=int(input('Choose any room from the above chart:'))
                     roomslist.append(room)
-                diff= set(difference) & set(roomslist)
-                difflist=list(diff)
+                difflist=list(set(difference) & set(roomslist))
                 if sorted(roomslist) != sorted(difflist):
-                    print("Please choose rooms from the chart only")
+                    print('Please choose rooms from the chart only')
                 else:
                     email=input('Enter your email id: ')
                     no_of_person=int(input('Enter the no of people: '))
@@ -50,16 +49,16 @@ if __name__ == "__main__":
                         per.append(persons)
                     no_of_days=int(input('Enter the number of days you will be staying: '))
                     for item in roomslist:
-                        collection.insert_one({'name' : name , 'room_no' : item , 'email' : email , 'persons' : per, 'no_of_days' : no_of_days, 'no_of_person' : no_of_person})
-                    print("Rooms have been aloted to",name)
+                        collection.insert_one({'name' : name , 'room_no' : item , 'email' : email , 'persons' : per, 'no_of_days' : no_of_days, 'no_of_person' : no_of_person, 'checkin_time' : x})
+                    print("Rooms have been alloted to",name)
             case 2:
-                print("****Guest list****\nName\t\t\tRoom no.")
+                print('****Guest list****\nName\t\t\tRoom no.')
                 room=collection.find({}, { 'name': 1, 'room_no' : 1, '_id' : 0 })
                 for item in room:
                     print(item['name'],item['room_no'],sep='\t\t\t')
             case 3:
-                print("****Check out****")
-                name=input("Enter your name: ")
+                print('****Check out****')
+                name=input('Enter your name: ')
                 alotedroom=collection.find({'name': name},{'room_no' : 1, '_id':0})
                 for item in alotedroom:
                     print(item)
@@ -71,14 +70,25 @@ if __name__ == "__main__":
                     for i in range(no_room):
                         room=int(input('Enter the room no.: '))
                         collection.delete_one({'name' : name, 'room_no' : room})
-                print("Thank you!! Visit again")
+                else:
+                    print('Invalid input')
+                print('Thank you!! Visit again')
             case 4:
-                print("****Guest details****")
-                name=input("Enter your name: ")
-                email=input("Enter your email: ")
-                print(collection.find_one({'name' : name , 'email' : email},{'_id':0,'persons':0,'room_no':0}))
+                print('****Guest details****')
+                name=input('Enter your name: ')
+                email=input('Enter your email: ')
+                details=collection.find_one({'name' : name , 'email' : email},{'_id':0,'persons':1,'room_no':1,'email' : email})
+                if details == None:
+                    print('****No data found****')
+                else:
+                    values = details.values()
+                    detlist=list()
+                    for value in values:
+                        detlist.append(value)
+                    print(detlist)
             case 5:
-                print("****Exit****")
+                print('****Exit****')
                 break
             case _:
-                print("Input error")
+                print('Input error')
+    client.close()
