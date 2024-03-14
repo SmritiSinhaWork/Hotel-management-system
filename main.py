@@ -39,7 +39,7 @@ if __name__ == '__main__':
                             arrayroom.append(item['room_no'])
                     difference = set(total_rooms) - set(arrayroom)
                     return f'Available rooms:, {difference}'
-                print(availableroom)
+                print(availableroom())
                 
                 def checkin(no_rooms):
                     roomslist=[]
@@ -64,6 +64,7 @@ if __name__ == '__main__':
                 print(checkin(no_rooms))
 
             case 2:
+                
                 print('****Guest list****\nName\t\t\tRoom no.')
                 room=collection.find({}, { 'name': 1, 'room_no' : 1, '_id' : 0 })
                 for item in room:
