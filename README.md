@@ -1,2 +1,3 @@
-# Hotel management system backend
+# Hotel management system
+backend
 mongodb + python
